@@ -23,15 +23,31 @@ p {
   margin: 0;
   flex-wrap: wrap;
   word-break: break-all;
+  height: 1.2em;
 
-  &:last-of-type{
-    &::after {
-      content: "";
-      display: inline-block;
-      width: 0.65rem;
-      background: #ffffff;
-      opacity: 0;
-      height: 1.2rem;
+  &.vim-tilde {
+    color: #5E40EE;
+  }
+
+  &.current{
+    span {
+      position: relative;
+
+      &::before {
+        position: absolute;
+        left: 0;
+        content: "a";
+        display: inline-block;
+        background: #ffffff;
+        opacity: 0;
+        height: 1.2rem;
+        transform: translateX(var(--caret-offset));
+      }
+
+      &::after {
+        content: "a";
+        opacity: 0;
+      }
     }
   }
 }
@@ -44,12 +60,20 @@ p {
   bottom: 0;
 
   &:focus {
-    & ~ p {
-      &::after {
+    & ~ p span {
+      &::before {
         opacity: 0.3;
       }
     }
   }
+}
+
+body.debug #i {
+  opacity: 1;
+  width: 100%;
+  height: auto;
+  left: 0;
+  box-sizing: border-box;
 }
 
 @keyframes caret-blink {
