@@ -30,6 +30,8 @@ input.addEventListener( 'input', () => {
   textField.innerHTML = input.value;
 } );
 
+const savedState = {};
+
 const addNewLine = ( msg ) => {
   let text = msg;
   if ( typeof msg === 'object' ) {
@@ -53,17 +55,45 @@ const addNewLine = ( msg ) => {
   return span;
 };
 
-
-const commandHandler = cmd => {
+const commandHandler = cmd => new Promise( ( resolve ) => {
   switch ( cmd ) {
-  case 'clear':
-    return Array( 50 ).fill( '&nbsp;' );
-  case '':
-    return;
-  default:
-    return [ `-bash: ${cmd}: command not found` ];
+  case 'clear': {
+    const newM = doc.createElement( 'label' );
+    newM.appendChild( input );
+    newM.appendChild( qs( '#m p:last-of-type' ) );
+
+    doc.body.appendChild( newM );
+    doc.body.removeChild( qs( '#m' ) );
+    newM.setAttribute( 'id', 'm' );
+    newM.setAttribute( 'for', 'i' );
+    newM.focus();
+
+    input.value = '';
+    textField.innerHTML = '';
+    break;
   }
-};
+
+  case 'vim': {
+    savedState.input = input;
+    savedState.textField = textField;
+    savedState.m = qs( '#m' ).cloneNode( true );
+
+    resolve();
+
+    break;
+  }
+
+  case '': {
+    resolve();
+
+    break;
+  }
+
+  default: {
+    resolve( [ `-bash: ${ cmd }: command not found` ] );
+  }
+  }
+} );
 
 const keydown = ( e ) => {
   if ( e.keyCode === 13 ) {
