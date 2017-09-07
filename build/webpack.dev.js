@@ -1,16 +1,17 @@
 /* eslint-disable import/no-commonjs, import/no-extraneous-dependencies */
-const webpack = require( "webpack" );
-const FriendlyErrorsPlugin = require( "friendly-errors-webpack-plugin" );
-const cssLoaders = require( "./css-loaders" );
-const common = require( "./common" );
+const webpack = require( 'webpack' );
+const FriendlyErrorsPlugin = require( 'friendly-errors-webpack-plugin' );
+const HtmlWebpackInlineSourcePlugin = require( 'html-webpack-inline-source-plugin' );
+const cssLoaders = require( './css-loaders' );
+const common = require( './common' );
 
 const { config, iP } = common;
 
 module.exports = {
   entry: [
     ...config.entry,
-    "webpack/hot/only-dev-server",
-    "webpack-dev-server/client?http://localhost:8080",
+    'webpack/hot/only-dev-server',
+    'webpack-dev-server/client?http://localhost:8080',
   ],
 
   output: config.output,
@@ -21,13 +22,13 @@ module.exports = {
     quiet: true,
   },
 
-  devtool: "eval",
+  devtool: 'eval-source-map',
 
   module: {
     rules: [ ...config.rules, {
       test: /\.s[ca]ss$/,
       use: [ {
-        loader: "style-loader",
+        loader: 'style-loader',
         options: {
           sourceMap: true,
         },
@@ -40,5 +41,6 @@ module.exports = {
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new FriendlyErrorsPlugin(),
+    new HtmlWebpackInlineSourcePlugin(),
   ],
 };

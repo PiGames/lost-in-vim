@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --config ./build/webpack.dev.js",
+    "window": "WINDOW=true webpack-dev-server --config ./build/webpack.window.js",
     "clean": "rimraf dist",
     "build": "npm run clean && NODE_ENV=production webpack --config ./build/webpack.prod.js -p --progress"
   },
@@ -40,6 +41,7 @@
     ]
   },
   "dependencies": {
-    "babel-eslint": "^7.2.3"
+    "babel-eslint": "^7.2.3",
+    "html-webpack-inline-source-plugin": "^0.0.9"
   }
 }
