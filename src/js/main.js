@@ -22,11 +22,9 @@ win.focus();
 const qs = _ => doc.querySelector( _ );
 
 const input = qs( '#i' );
+
 const firstLine = qs( '#m p:last-of-type' );
 let textField = firstLine.querySelector( 'span' );
-
-const sampleLine = firstLine.cloneNode( true );
-sampleLine.removeAttribute( 'id' );
 
 input.addEventListener( 'input', () => {
   textField.innerHTML = input.value;
@@ -81,5 +79,6 @@ const keydown = ( e ) => {
     textField.scrollIntoView();
   }
 };
+
 
 input.addEventListener( 'keydown', keydown );
