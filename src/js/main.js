@@ -22,11 +22,9 @@ win.focus();
 const qs = a => doc.querySelector( a );
 
 const input = qs( '#i' );
+
 const firstLine = qs( '#m p:last-of-type' );
 let textField = firstLine.querySelector( 'span' );
-
-const sampleLine = firstLine.cloneNode( true );
-sampleLine.removeAttribute( 'id' );
 
 input.addEventListener( 'input', () => {
   textField.innerHTML = input.value;
@@ -59,7 +57,18 @@ const addNewLine = ( msg ) => {
 const commandHandler = cmd => new Promise( ( resolve ) => {
   switch ( cmd ) {
   case 'clear': {
-    resolve( Array( 50 ).fill( '&nbsp;' ) );
+    const newM = doc.createElement( 'label' );
+    newM.appendChild( input );
+    newM.appendChild( qs( '#m p:last-of-type' ) );
+
+    doc.body.appendChild( newM );
+    doc.body.removeChild( qs( '#m' ) );
+    newM.setAttribute( 'id', 'm' );
+    newM.setAttribute( 'for', 'i' );
+    newM.focus();
+
+    input.value = '';
+    textField.innerHTML = '';
     break;
   }
 
@@ -92,5 +101,6 @@ const keydown = ( e ) => {
       } );
   }
 };
+
 
 input.addEventListener( 'keydown', keydown );
