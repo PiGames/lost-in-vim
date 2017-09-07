@@ -19,7 +19,7 @@ doc = $winDoc;
 win.focus();
 */
 
-const qs = a => doc.querySelector( a );
+const qs = _ => doc.querySelector( _ );
 
 const input = qs( '#i' );
 const firstLine = qs( '#m p:last-of-type' );
@@ -56,40 +56,29 @@ const addNewLine = ( msg ) => {
 };
 
 
-const commandHandler = cmd => new Promise( ( resolve ) => {
+const commandHandler = cmd => {
   switch ( cmd ) {
-  case 'clear': {
-    resolve( Array( 50 ).fill( '&nbsp;' ) );
-    break;
+  case 'clear':
+    return Array( 50 ).fill( '&nbsp;' );
+  case '':
+    return;
+  default:
+    return [ `-bash: ${cmd}: command not found` ];
   }
-
-  case '': {
-    resolve();
-
-    break;
-  }
-
-  default: {
-    resolve( [ `-bash: ${cmd}: command not found` ] );
-  }
-  }
-} );
-
+};
 
 const keydown = ( e ) => {
   if ( e.keyCode === 13 ) {
-    commandHandler( input.value )
-      .then( ( response ) => {
-        if ( response && response.length > 0 ) {
-          response.forEach( ( msg ) => {
-            addNewLine( msg );
-          } );
-        }
-
-        textField = addNewLine( { dir: true } );
-        input.value = '';
-        textField.scrollIntoView();
+    const response = commandHandler( input.value );
+    if ( response && response.length > 0 ) {
+      response.forEach( ( msg ) => {
+        addNewLine( msg );
       } );
+    }
+
+    textField = addNewLine( { dir: true } );
+    input.value = '';
+    textField.scrollIntoView();
   }
 };
 
