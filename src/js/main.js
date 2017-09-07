@@ -23,10 +23,26 @@ const qs = a => doc.querySelector( a );
 
 const input = qs( '#i' );
 
+const GAME_STATES = {
+  'PRE_VIM': 0,
+  'VIM': 1,
+  'AFTER_VIM': 2,
+};
+
+const CURRENT_GAME_STATE = GAME_STATES.PRE_VIM;
+
+const PRE_VIM_COMMAND = 'git commit';
+
+let LAST_TYPED_CHARACTER_INDEX = -1;
+
 const firstLine = qs( '#m p:last-of-type' );
 let textField = firstLine.querySelector( 'span' );
 
 input.addEventListener( 'input', () => {
+  switch ( CURRENT_GAME_STATE ) {
+  case GAME_STATES.PRE_VIM:
+    input.value = PRE_VIM_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
+  }
   textField.innerHTML = input.value;
 } );
 
@@ -84,22 +100,27 @@ const commandHandler = cmd => new Promise( ( resolve ) => {
   }
 } );
 
+const onEnterPress = () => {
+  commandHandler( input.value )
+    .then( ( response ) => {
+      if ( response && response.length > 0 ) {
+        response.forEach( ( msg ) => {
+          addNewLine( msg );
+        } );
+      }
+
+      textField = addNewLine( { dir: true } );
+      input.value = '';
+      textField.scrollIntoView();
+    } );
+};
 
 const keydown = ( e ) => {
   if ( e.keyCode === 13 ) {
-    commandHandler( input.value )
-      .then( ( response ) => {
-        if ( response && response.length > 0 ) {
-          response.forEach( ( msg ) => {
-            addNewLine( msg );
-          } );
-        }
-
-        textField = addNewLine( { dir: true } );
-        input.value = '';
-        textField.scrollIntoView();
-      } );
+    onEnterPress();
+    return;
   }
+
 };
 
 
