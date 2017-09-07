@@ -1,34 +1,21 @@
-let doc = document;
+import { qs, doc } from './utils';
 
-/*
-const titleText = '🏠 bartoszlegiec — -bash — 80×24';
-const win = window.open( "", titleText, "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes" );
+const input = () => qs( '#i' );
 
-const $winDoc = win.document;
+const GAME_STATES = {
+  'PRE_VIM': 0,
+  'VIM': 1,
+  'AFTER_VIM': 2,
+};
 
-const title = $winDoc.createElement( "title" );
-title.innerHTML = titleText;
+let CURRENT_GAME_STATE = GAME_STATES.PRE_VIM;
 
-$winDoc.head.appendChild( title );
+const PRE_VIM_COMMAND = 'git commit -a';
 
-const style = document.querySelector( "style" );
-$winDoc.head.appendChild( style.cloneNode( true ) );
-$winDoc.body.innerHTML = document.body.innerHTML;
-doc = $winDoc;
-
-win.focus();
-*/
-
-const qs = a => doc.querySelector( a );
-
-const input = qs( '#i' );
+let LAST_TYPED_CHARACTER_INDEX = 0;
 
 const firstLine = qs( '#m p:last-of-type' );
 let textField = firstLine.querySelector( 'span' );
-
-input.addEventListener( 'input', () => {
-  textField.innerHTML = input.value;
-} );
 
 const addNewLine = ( msg ) => {
   let text = msg;
@@ -40,7 +27,19 @@ const addNewLine = ( msg ) => {
   newLine.innerHTML = '';
 
   if ( msg && msg.dir ) {
-    newLine.innerHTML = 'MacBook-Pro-Maciek:~ bartoszlegiec$&nbsp;';
+    if ( msg.dir === true ) {
+      newLine.innerHTML = 'MacBook-Pro-Maciek:~ bartoszlegiec$&nbsp;';
+    } else {
+      newLine.innerHTML = msg.dir;
+    }
+  }
+
+  if ( msg && msg.disabled ) {
+    newLine.classList.add( 'disabled' );
+  }
+
+  if ( msg && msg.className ) {
+    newLine.classList.add( msg.className );
   }
 
   const span = document.createElement( 'span' );
@@ -49,16 +48,14 @@ const addNewLine = ( msg ) => {
   newLine.appendChild( span );
 
   qs( '#m' ).appendChild( newLine );
-
   return span;
 };
-
 
 const commandHandler = cmd => new Promise( ( resolve ) => {
   switch ( cmd ) {
   case 'clear': {
     const newM = doc.createElement( 'label' );
-    newM.appendChild( input );
+    newM.appendChild( input() );
     newM.appendChild( qs( '#m p:last-of-type' ) );
 
     doc.body.appendChild( newM );
@@ -67,7 +64,7 @@ const commandHandler = cmd => new Promise( ( resolve ) => {
     newM.setAttribute( 'for', 'i' );
     newM.focus();
 
-    input.value = '';
+    input().value = '';
     textField.innerHTML = '';
     break;
   }
@@ -84,23 +81,40 @@ const commandHandler = cmd => new Promise( ( resolve ) => {
   }
 } );
 
+const onEnterPress = () => {
+  commandHandler( input.value )
+    .then( ( response ) => {
+      if ( response && response.length > 0 ) {
+        response.forEach( ( msg ) => {
+          addNewLine( msg );
+        } );
+      }
 
-const keydown = ( e ) => {
-  if ( e.keyCode === 13 ) {
-    commandHandler( input.value )
-      .then( ( response ) => {
-        if ( response && response.length > 0 ) {
-          response.forEach( ( msg ) => {
-            addNewLine( msg );
-          } );
-        }
-
-        textField = addNewLine( { dir: true } );
-        input.value = '';
-        textField.scrollIntoView();
-      } );
-  }
+      textField = addNewLine( { dir: true } );
+      input.value = '';
+      textField.scrollIntoView();
+    } );
 };
 
+const consoleKeydown = ( e ) => {
+  if ( e.keyCode === 13 ) {
+    onEnterPress();
+    return;
+  }
 
-input.addEventListener( 'keydown', keydown );
+};
+
+const replaceSpan = () => {
+  switch ( CURRENT_GAME_STATE ) {
+  case GAME_STATES.PRE_VIM:
+    input().value = PRE_VIM_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
+  }
+  textField.innerHTML = input().value;
+};
+
+const bindEvents = () => {
+  input().addEventListener( 'input', replaceSpan );
+  input().addEventListener( 'keydown', consoleKeydown );
+};
+
+bindEvents();
