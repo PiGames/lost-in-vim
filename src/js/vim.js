@@ -2,7 +2,7 @@ import { qs, doc } from './utils';
 const savedState = {};
 let data = {};
 
-export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents, consoleKeydown ) => {
+export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents, consoleKeydown, onExit ) => {
   const input = inputFn();
   savedState.input = input.cloneNode( true );
   savedState.textField = textField.cloneNode( true );
@@ -38,7 +38,7 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
 
   input.focus();
   input.removeEventListener( 'keydown', consoleKeydown );
-  data = { inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents };
+  data = { inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents, onExit };
   input.addEventListener( 'keydown', changeCurrent );
 };
 
@@ -59,7 +59,10 @@ const exitVim = () => {
 
   console.log( data );
   data.commandHandler( `echo ${ postCommit }` );
+  data.onExit();
 };
+
+window.exitVim = exitVim;
 
 const changeCurrent = ( e ) => {
   if ( e.keyCode === 67 && e.ctrlKey ) {

@@ -31,11 +31,14 @@ const GAME_STATES = {
   'PRE_VIM': 0,
   'VIM': 1,
   'AFTER_VIM': 2,
+  'AFTER_PUSH': 3,
 };
 
 let CURRENT_GAME_STATE = GAME_STATES.PRE_VIM;
 
 const PRE_VIM_COMMAND = 'git commit -a';
+const AFTER_VIM_COMMAND = 'git push';
+const AFTER_PUSH_COMMAND = 'echo "Congratulations, You won!"';
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
@@ -84,6 +87,30 @@ const addNewLine = ( msg ) => {
   return span;
 };
 
+const handleGit = argument => {
+  switch ( argument ) {
+  case 'commit': {
+    CURRENT_GAME_STATE = GAME_STATES.VIM;
+    openVim( input, textField, addNewLine, focusP, tf => textField = tf, commandHandler, bindEvents, consoleKeydown, () => CURRENT_GAME_STATE = GAME_STATES.AFTER_VIM );
+    return false;
+  }
+  case 'push': {
+    CURRENT_GAME_STATE = GAME_STATES.AFTER_PUSH;
+    return [
+      'Counting objects: 4, done.',
+      'Delta compression using up to 4 threads',
+      'Compressing objects: 100% (4/4), done.',
+      'Writing objects: 100% (4/4), 354 bytes | 0 bytes/s. done.',
+      'Total 4 (delta 3), reused 0 (delta 0)',
+      'remote: Resolving deltas: 100% (4/4), completed with 1 local object.',
+      'To https://github.com/js13kGames/js13kgames.com.git',
+      '63ad859..06b7dc0  master -> master',
+    ];
+  }
+  }
+
+};
+
 const commandHandler = fullCmd => {
   let resolve = false;
 
@@ -107,10 +134,16 @@ const commandHandler = fullCmd => {
     break;
   }
 
-  case 'git':
+  case 'git': {
+    LAST_TYPED_CHARACTER_INDEX = 0;
+    console.log( args[ 0 ] );
+    resolve = handleGit( args[ 0 ] );
+    console.log( resolve );
+    break;
+  }
   case 'vim': {
     CURRENT_GAME_STATE = GAME_STATES.VIM;
-    openVim( input, textField, addNewLine, focusP, tf => textField = tf, commandHandler, bindEvents, consoleKeydown );
+    openVim( input, textField, addNewLine, focusP, tf => textField = tf, commandHandler, bindEvents, consoleKeydown, () => CURRENT_GAME_STATE = GAME_STATES.AFTER_VIM );
     break;
   }
 
@@ -176,6 +209,13 @@ const replaceSpan = () => {
   switch ( CURRENT_GAME_STATE ) {
   case GAME_STATES.PRE_VIM:
     input().value = PRE_VIM_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
+    break;
+  case GAME_STATES.AFTER_VIM:
+    input().value = AFTER_VIM_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
+    break;
+  case GAME_STATES.AFTER_PUSH:
+    input().value = AFTER_PUSH_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
+    break;
   }
   textField.innerHTML = input().value;
 };
