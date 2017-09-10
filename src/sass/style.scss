@@ -42,11 +42,13 @@ p {
         opacity: 0;
         height: 1.2rem;
         transform: translateX(var(--caret-offset));
+        color: transparent;
       }
 
       &::after {
         content: "a";
         opacity: 0;
+        color: transparent;
       }
     }
   }

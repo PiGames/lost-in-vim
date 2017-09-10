@@ -143,21 +143,6 @@ const commandHandler = fullCmd => {
   }
 };
 
-const onEnterPress = () => {
-  commandHandler( input().value )
-    .then( ( response ) => {
-      if ( response && response.length > 0 ) {
-        response.forEach( ( msg ) => {
-          addNewLine( msg );
-        } );
-      }
-
-      textField = addNewLine( { dir: true } );
-      input.value = '';
-      textField.scrollIntoView();
-    } );
-};
-
 const getCaretPosition = ( oField ) => {
   let iCaretPos = 0;
 
@@ -178,7 +163,7 @@ const getCaretPosition = ( oField ) => {
 
 const consoleKeydown = ( e ) => {
   if ( e.keyCode === 13 ) {
-    onEnterPress();
+    commandHandler( input().value );
     return;
   }
 

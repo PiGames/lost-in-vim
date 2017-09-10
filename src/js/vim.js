@@ -87,6 +87,7 @@ const changeCurrent = ( e ) => {
       data.inputFn().focus();
 
       data.textField = span;
+      data.setTextField( span );
     }
   }
 };
