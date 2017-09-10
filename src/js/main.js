@@ -3,7 +3,7 @@ import { openVim } from './vim';
 const titleText = '🏠 bartoszlegiec — -bash — 80×24';
 
 if ( window.location.hash !== '#no' ) {
-  const win = window.open( './#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
+  const win = window.open( './index.html#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
 
   win.focus();
 }
