@@ -1,28 +1,19 @@
-import { qs, doc, setDoc } from './utils';
+import { qs } from './utils';
 import { openVim } from './vim';
 const titleText = '🏠 bartoszlegiec — -bash — 80×24';
 
-if ( process.env.WINDOW ) {
-  const win = window.open( '', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
-
-  const $winDoc = win.document;
-
-  const style = document.querySelector( 'style' );
-  $winDoc.head.appendChild( style.cloneNode( true ) );
-
-  $winDoc.body.innerHTML = document.body.innerHTML;
-
-  setDoc( $winDoc );
+if ( window.location.hash !== '#no' ) {
+  const win = window.open( './#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
 
   win.focus();
 }
 
-const title = doc.createElement( 'title' );
+const title = document.createElement( 'title' );
 title.innerHTML = titleText;
-doc.head.appendChild( title );
+document.head.appendChild( title );
 
 if ( process.env.NODE_ENV !== 'production' ) {
-  doc.body.classList.add( 'debug' );
+  document.body.classList.add( 'debug' );
 }
 
 const input = () => qs( '#i' );
@@ -43,7 +34,7 @@ const firstLine = qs( '#m p:last-of-type' );
 let textField = firstLine.querySelector( 'span' );
 
 const focusP = () => {
-  doc.querySelectorAll( '#m p' ).forEach( p => {
+  document.querySelectorAll( '#m p' ).forEach( p => {
     p.classList.remove( 'current' );
   } );
 
@@ -92,12 +83,12 @@ const commandHandler = fullCmd => {
 
   switch ( cmd ) {
   case 'clear': {
-    const newM = doc.createElement( 'label' );
+    const newM = document.createElement( 'label' );
     newM.appendChild( input() );
     newM.appendChild( qs( '#m p:last-of-type' ) );
 
-    doc.body.appendChild( newM );
-    doc.body.removeChild( qs( '#m' ) );
+    document.body.appendChild( newM );
+    document.body.removeChild( qs( '#m' ) );
     newM.setAttribute( 'id', 'm' );
     newM.setAttribute( 'for', 'i' );
     newM.focus();

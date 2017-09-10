@@ -1,4 +1,4 @@
-import { qs, doc } from './utils';
+import { qs } from './utils';
 const savedState = {};
 let data = {};
 
@@ -10,7 +10,7 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
 
   qs( '#m' ).innerHTML = '';
   qs( '#m' ).appendChild( input );
-  const p = doc.createElement( 'p' );
+  const p = document.createElement( 'p' );
   textField.innerHTML = '';
   input.value = '';
   p.appendChild( textField );
@@ -44,7 +44,7 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
 
 const exitVim = () => {
   qs( '#m' ).parentNode.removeChild( qs( '#m' ) );
-  doc.body.appendChild( savedState.m );
+  document.body.appendChild( savedState.m );
 
   data.setTextField( data.addNewLine( { dir: true } ) );
   data.focusP();

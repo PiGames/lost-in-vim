@@ -3,6 +3,7 @@ const webpack = require( 'webpack' );
 const ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
 const cssLoaders = require( './css-loaders' );
 const common = require( './common' );
+const HtmlWebpackInlineSourcePlugin = require( 'html-webpack-inline-source-plugin' );
 
 const { config, iP } = common;
 
@@ -33,5 +34,6 @@ module.exports = {
     ...config.plugins,
     new webpack.optimize.ModuleConcatenationPlugin(),
     ExtractSASS,
+    new HtmlWebpackInlineSourcePlugin(),
   ],
 };
