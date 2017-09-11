@@ -1,7 +1,7 @@
 import { qs } from './utils';
 import { openVim } from './vim';
 const titleText = '📁 lost-in-vim — -bash — 80×24';
-const USER_NAME = 'PearBook-Pro:~ js13k$';
+const USER_NAME = 'js13k:~ lost-in-vim';
 
 if ( window.location.hash !== '#no' ) {
   const win = window.open( './index.html#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
@@ -30,7 +30,7 @@ let CURRENT_GAME_STATE = GAME_STATES.PRE_VIM;
 
 const PRE_VIM_COMMAND = 'git commit -a';
 const AFTER_VIM_COMMAND = 'git push';
-const AFTER_PUSH_COMMAND = 'echo "Congratulations, You won!"';
+const AFTER_PUSH_COMMAND = 'echo "%0f0Congratulations, You have won!%fff"';
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
@@ -154,10 +154,24 @@ const commandHandler = fullCmd => {
   }
   }
 
+  const colorise = ( msg ) => {
+    const colpos = msg.search( /%[a-f0-9]{3}/ );
+    const color = msg.match( /%([a-f0-9]{3})/ );
+
+    if ( colpos < 0 ) {
+      return msg;
+    } else {
+      const message = msg.substring( 0, colpos ) + `<span style="color: #${ color[ 1 ] }">` + msg.substring( colpos + 4 ) + '</span>';
+
+      return colorise( message );
+    }
+  };
+
   if ( resolve !== false ) {
     if ( resolve && resolve.length > 0 ) {
       resolve.forEach( ( msg ) => {
-        addNewLine( msg );
+        const message = colorise( msg );
+        addNewLine( message );
       } );
     }
 
