@@ -101,7 +101,7 @@ body.debug #i {
   }
 }
 
-.insert::before {
+.insert.show::before {
   content: '-- INSERT --';
   color:  white;
 }
@@ -113,8 +113,12 @@ body.debug #i {
   flex-wrap: wrap;
   word-break: break-all;
   height: 1.2em;
-  
+
   &.current{
+    &.show::before{
+      content: ':';
+      color: white;
+    }
     span {
       position: relative;
 

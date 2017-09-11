@@ -4,28 +4,10 @@ let data = {};
 
 let isInputModeOn = false;
 let isCommandLineActive = false;
+let disableInput = false;
 
 const EXITING_VIM_COMBINATIONS = [
-  {
-    'Escape': false,
-    ':': false,
-    'q': false,
-    combinationString: 'wq',
-  },
-  {
-    'Escape': false,
-    ':': false,
-    'w': false,
-    'q': false,
-    combinationString: 'q',
-  },
-  {
-    'Escape': false,
-    ':': false,
-    'q': false,
-    '!': false,
-    combinationString: 'q!',
-  },
+  'wq', 'q', 'q!',
 ];
 
 export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents, consoleKeydown, onExit ) => {
@@ -60,6 +42,7 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
   const insertSign = addNewLine( { dir: '', disabled: true, className: 'insert' } );
   const commandLine = addNewLine( { dir: '', disabled: true, className: 'vim-command-line' } );
 
+  insertSign.parentNode.classList.add( 'show' );
 
   input.focus();
   input.removeEventListener( 'keydown', consoleKeydown );
@@ -90,8 +73,10 @@ const exitVim = () => {
 window.exitVim = exitVim;
 
 const changeCurrent = ( e ) => {
-  console.log( e );
-  if ( e.keyCode === 67 && e.ctrlKey ) {
+  if ( disableInput ) {
+    e.preventDefault();
+  }
+  if ( e.key === 'Enter' && isCommandLineActive && EXITING_VIM_COMBINATIONS.find( _ => _ === data.commandLine.innerText ) ) {
     exitVim();
   } else if ( e.keyCode === 40 || e.keyCode === 38 ) {
     e.preventDefault();
@@ -126,26 +111,37 @@ const changeCurrent = ( e ) => {
     const firstSpan = document.querySelector( 'p span' );
     data.inputFn().value = firstSpan.innerText;
     e.preventDefault();
-    data.textField = document.querySelector( 'p span' );
-    data.setTextField( document.querySelector( 'p span' ) );
+    data.textField = firstSpan;
+    data.setTextField( firstSpan );
+    firstSpan.parentNode.classList.add( 'current' );
+    data.commandLine.parentNode.classList.remove( 'current' );
     isInputModeOn = true;
     isCommandLineActive = false;
+    data.insertSign.parentNode.classList.add( 'show' );
+    disableInput = false;
+
     return;
   }
 
   if ( e.key === 'Escape' ) {
     isInputModeOn = false;
     isCommandLineActive = false;
+    data.insertSign.parentNode.classList.remove( 'show' );
+    data.commandLine.parentNode.classList.remove( 'show' );
+    data.commandLine.innerText = '';
+    disableInput = true;
     return;
   }
 
   if ( !isInputModeOn && e.key === ':' && !isCommandLineActive ) {
+    disableInput = false;
     data.inputFn().value = '';
-    data.commandLine.parentNode.classList.remove( 'disabled' );
+    e.preventDefault();
+    data.commandLine.parentNode.classList.add( 'disabled' );
+    data.commandLine.parentNode.classList.add( 'show' );
     document.querySelector( '.current' ).classList.remove( 'current' );
     data.commandLine.parentNode.classList.add( 'current' );
 
-    console.log( data.commandLine );
     data.textField = data.commandLine;
     data.setTextField( data.commandLine );
     isCommandLineActive = true;

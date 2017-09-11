@@ -162,7 +162,6 @@ const commandHandler = fullCmd => {
   }
 
   if ( CURRENT_GAME_STATE === GAME_STATES.AFTER_PUSH ) {
-    console.log( fullCmd.length, AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].length );
 
     if ( fullCmd.length === AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].length ) {
       AFTER_PUSH_COMMANDS_INDEX = Math.min( AFTER_PUSH_COMMANDS_INDEX + 1, AFTER_PUSH_COMMANDS.length - 1 );
