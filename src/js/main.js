@@ -2,6 +2,7 @@ import { qs } from './utils';
 import { openVim } from './vim';
 const titleText = '📁 lost-in-vim — -bash — 80×24';
 const USER_NAME = 'js13k:~ lost-in-vim';
+import asciipi from './pigame.txt';
 
 if ( window.location.hash !== '#no' ) {
   const win = window.open( './index.html#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
@@ -27,10 +28,11 @@ const GAME_STATES = {
 };
 
 let CURRENT_GAME_STATE = GAME_STATES.PRE_VIM;
+let AFTER_PUSH_COMMANDS_INDEX = 0;
 
 const PRE_VIM_COMMAND = 'git commit -a';
 const AFTER_VIM_COMMAND = 'git push';
-const AFTER_PUSH_COMMAND = 'echo "%0f0Congratulations, You have won!%fff"';
+const AFTER_PUSH_COMMANDS = [ 'echo "%0f0Congratulations, You have won!%fff"', 'credits' ];
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
@@ -140,7 +142,12 @@ const commandHandler = fullCmd => {
   }
 
   case 'echo': {
-    resolve = args.join( ' ' ).split( '\n' );
+    resolve = args.join( ' ' ).replace( /\"/g, '' ).split( '\n' );
+    break;
+  }
+
+  case 'credits': {
+    resolve = asciipi.split( '\n' ).map( a => '%f06292' + a.replace( /\|/g, '&nbsp;' ) );
     break;
   }
 
@@ -154,14 +161,24 @@ const commandHandler = fullCmd => {
   }
   }
 
+  if ( CURRENT_GAME_STATE === GAME_STATES.AFTER_PUSH ) {
+    console.log( fullCmd.length, AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].length );
+
+    if ( fullCmd.length === AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].length ) {
+      AFTER_PUSH_COMMANDS_INDEX = Math.min( AFTER_PUSH_COMMANDS_INDEX + 1, AFTER_PUSH_COMMANDS.length - 1 );
+    }
+
+    LAST_TYPED_CHARACTER_INDEX = 0;
+  }
+
   const colorise = ( msg ) => {
-    const colpos = msg.search( /%[a-f0-9]{3}/ );
-    const color = msg.match( /%([a-f0-9]{3})/ );
+    const colpos = msg.search( /%[a-f0-9]{3,6}/ );
+    const color = msg.match( /%([a-f0-9]{3,6})/ );
 
     if ( colpos < 0 ) {
       return msg;
     } else {
-      const message = msg.substring( 0, colpos ) + `<span style="color: #${ color[ 1 ] }">` + msg.substring( colpos + 4 ) + '</span>';
+      const message = msg.substring( 0, colpos ) + `<span style="color: #${ color[ 1 ] }">` + msg.substring( colpos + color[ 0 ].length ) + '</span>';
 
       return colorise( message );
     }
@@ -220,7 +237,7 @@ const replaceSpan = () => {
     input().value = AFTER_VIM_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
     break;
   case GAME_STATES.AFTER_PUSH:
-    input().value = AFTER_PUSH_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
+    input().value = AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
     break;
   }
   textField.innerHTML = input().value;
