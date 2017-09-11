@@ -1,6 +1,7 @@
 import { qs } from './utils';
 import { openVim } from './vim';
 const titleText = '🏠 bartoszlegiec — -bash — 80×24';
+const USER_NAME = 'PearBook-Pro:~ js13k$';
 
 if ( window.location.hash !== '#no' ) {
   const win = window.open( './index.html#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
@@ -30,16 +31,6 @@ const PRE_VIM_COMMAND = 'git commit -a';
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
-const firstLine = qs( '#m p:last-of-type' );
-let textField = firstLine.querySelector( 'span' );
-
-const focusP = () => {
-  document.querySelectorAll( '#m p' ).forEach( p => {
-    p.classList.remove( 'current' );
-  } );
-
-  textField.parentNode.classList.add( 'current' );
-};
 
 const addNewLine = ( msg ) => {
   let text = msg;
@@ -52,7 +43,7 @@ const addNewLine = ( msg ) => {
 
   if ( msg && msg.dir ) {
     if ( msg.dir === true ) {
-      newLine.innerHTML = 'MacBook-Pro-Maciek:~ bartoszlegiec$&nbsp;';
+      newLine.innerHTML = `${ USER_NAME }&nbsp;`;
     } else {
       newLine.innerHTML = msg.dir;
     }
@@ -74,6 +65,18 @@ const addNewLine = ( msg ) => {
   qs( '#m' ).appendChild( newLine );
   return span;
 };
+
+const focusP = () => {
+  document.querySelectorAll( '#m p' ).forEach( p => {
+    p.classList.remove( 'current' );
+  } );
+
+  textField.parentNode.classList.add( 'current' );
+};
+
+let textField = addNewLine( { dir: true } );
+focusP();
+
 
 const commandHandler = fullCmd => {
   let resolve = false;
