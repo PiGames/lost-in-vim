@@ -30,7 +30,7 @@ let AFTER_PUSH_COMMANDS_INDEX = 0;
 
 const PRE_VIM_COMMAND = 'git commit -a';
 const AFTER_VIM_COMMAND = 'git push';
-const AFTER_PUSH_COMMANDS = [ 'echo "%0f0Congratulations, You have won!%fff"', 'credits' ];
+const AFTER_PUSH_COMMANDS = [ 'echo "%0f0Congratulations, You have won!%fff"', 'credits', 'exit' ];
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
@@ -147,6 +147,22 @@ const commandHandler = fullCmd => {
     break;
   }
 
+  case 'exit': {
+    unBindEvents();
+    input().blur();
+    input().remove();
+
+    `logout
+    Saving session...
+    ...copying shared history...
+    ...saving history...truncating history files...
+    ...completed.
+
+    [Process completed]`.split( '\n' ).forEach( line => addNewLine( line ) );
+
+    break;
+  }
+
   case 'echo': {
     resolve = args.join( ' ' ).replace( /\"/g, '' ).split( '\n' );
     break;
@@ -257,6 +273,12 @@ const bindEvents = () => {
   input().addEventListener( 'input', replaceSpan );
   input().addEventListener( 'keydown', consoleKeydown );
   input().addEventListener( 'keyup', consoleKeyup );
+};
+
+const unBindEvents = () => {
+  input().removeEventListener( 'input', replaceSpan );
+  input().removeEventListener( 'keydown', consoleKeydown );
+  input().removeEventListener( 'keyup', consoleKeyup );
 };
 
 bindEvents();
