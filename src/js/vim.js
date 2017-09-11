@@ -141,10 +141,11 @@ const changeCurrent = ( e ) => {
 
   if ( !isInputModeOn && e.key === ':' && !isCommandLineActive ) {
     data.inputFn().value = '';
-    data.commandLine.focus();
+    data.commandLine.parentNode.classList.remove( 'disabled' );
     document.querySelector( '.current' ).classList.remove( 'current' );
-    data.commandLine.classList.add( 'current' );
-    data.commandLine.removeAttribute( 'disabled' );
+    data.commandLine.parentNode.classList.add( 'current' );
+
+    console.log( data.commandLine );
     data.textField = data.commandLine;
     data.setTextField( data.commandLine );
     isCommandLineActive = true;
