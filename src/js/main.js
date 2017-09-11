@@ -1,7 +1,7 @@
 import { qs } from './utils';
 import { openVim } from './vim';
-const titleText = '📁 lost-in-vim — -bash — 80×24';
-const USER_NAME = 'js13k:~ lost-in-vim';
+const titleText = '📁 js13kgames.com — -bash — 80×24';
+const USER_NAME = 'js13k:~ js13kgames.com';
 import asciipi from './pigame.txt';
 
 if ( window.location.hash !== '#no' ) {
@@ -80,12 +80,11 @@ const handleGit = argument => {
   case 'push': {
     CURRENT_GAME_STATE = GAME_STATES.AFTER_PUSH;
     return [
-      'Counting objects: 4, done.',
-      'Delta compression using up to 4 threads',
-      'Compressing objects: 100% (4/4), done.',
-      'Writing objects: 100% (4/4), 354 bytes | 0 bytes/s. done.',
-      'Total 4 (delta 3), reused 0 (delta 0)',
-      'remote: Resolving deltas: 100% (4/4), completed with 1 local object.',
+      'Counting objects: 5, done.',
+      'Delta compression using up to 4 threads.',
+      'Compressing objects: 100% (2/2), done.',
+      'Writing objects: 100% (5/5), 369 bytes | 0 bytes/s, done.',
+      'Total 5 (delta 0), reused 0 (delta 0)',
       'To https://github.com/js13kGames/js13kgames.com.git',
       '63ad859..06b7dc0  master -> master',
     ];
