@@ -1,28 +1,20 @@
-import { qs, doc, setDoc } from './utils';
+import { qs } from './utils';
 import { openVim } from './vim';
 const titleText = '🏠 bartoszlegiec — -bash — 80×24';
+const USER_NAME = 'PearBook-Pro:~ js13k$';
 
-if ( process.env.WINDOW ) {
-  const win = window.open( '', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
-
-  const $winDoc = win.document;
-
-  const style = document.querySelector( 'style' );
-  $winDoc.head.appendChild( style.cloneNode( true ) );
-
-  $winDoc.body.innerHTML = document.body.innerHTML;
-
-  setDoc( $winDoc );
+if ( window.location.hash !== '#no' ) {
+  const win = window.open( './index.html#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
 
   win.focus();
 }
 
-const title = doc.createElement( 'title' );
+const title = document.createElement( 'title' );
 title.innerHTML = titleText;
-doc.head.appendChild( title );
+document.head.appendChild( title );
 
 if ( process.env.NODE_ENV !== 'production' ) {
-  doc.body.classList.add( 'debug' );
+  document.body.classList.add( 'debug' );
 }
 
 const input = () => qs( '#i' );
@@ -42,17 +34,6 @@ const AFTER_PUSH_COMMAND = 'echo "Congratulations, You won!"';
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
-const firstLine = qs( '#m p:last-of-type' );
-let textField = firstLine.querySelector( 'span' );
-
-const focusP = () => {
-  doc.querySelectorAll( '#m p' ).forEach( p => {
-    p.classList.remove( 'current' );
-  } );
-
-  textField.parentNode.classList.add( 'current' );
-};
-
 const addNewLine = ( msg ) => {
   let text = msg;
   if ( typeof msg === 'object' ) {
@@ -64,7 +45,7 @@ const addNewLine = ( msg ) => {
 
   if ( msg && msg.dir ) {
     if ( msg.dir === true ) {
-      newLine.innerHTML = 'MacBook-Pro-Maciek:~ bartoszlegiec$&nbsp;';
+      newLine.innerHTML = `${ USER_NAME }&nbsp;`;
     } else {
       newLine.innerHTML = msg.dir;
     }
@@ -111,6 +92,17 @@ const handleGit = argument => {
 
 };
 
+const focusP = () => {
+  document.querySelectorAll( '#m p' ).forEach( p => {
+    p.classList.remove( 'current' );
+  } );
+
+  textField.parentNode.classList.add( 'current' );
+};
+
+let textField = addNewLine( { dir: true } );
+focusP();
+
 const commandHandler = fullCmd => {
   let resolve = false;
 
@@ -119,12 +111,12 @@ const commandHandler = fullCmd => {
 
   switch ( cmd ) {
   case 'clear': {
-    const newM = doc.createElement( 'label' );
+    const newM = document.createElement( 'label' );
     newM.appendChild( input() );
     newM.appendChild( qs( '#m p:last-of-type' ) );
 
-    doc.body.appendChild( newM );
-    doc.body.removeChild( qs( '#m' ) );
+    document.body.appendChild( newM );
+    document.body.removeChild( qs( '#m' ) );
     newM.setAttribute( 'id', 'm' );
     newM.setAttribute( 'for', 'i' );
     newM.focus();

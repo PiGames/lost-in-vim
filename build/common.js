@@ -9,7 +9,8 @@ const iP = process.env.NODE_ENV === 'production';
 const HtmlWebpackPluginConfig = {
   filename: 'index.html',
   template: 'src/index.html',
-  inlineSource: '.css$',
+  inlineSource: '.(js|css)$',
+  minify: { collapseWhitespace: true },
 };
 
 module.exports = {
@@ -42,7 +43,7 @@ module.exports = {
       new HtmlWebpackPlugin( HtmlWebpackPluginConfig ),
       new webpack.DefinePlugin( {
         'process.env.NODE_ENV': JSON.stringify( process.env.NODE_ENV || 'development' ),
-        'process.env.WINDOW': JSON.stringify( process.env.WINDOW || false ),
+        'process.env.WINDOW': process.env.WINDOW || false,
       } ),
     ],
   },

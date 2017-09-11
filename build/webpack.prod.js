@@ -1,13 +1,14 @@
 /* eslint-disable import/no-commonjs, import/no-extraneous-dependencies */
-const webpack = require( "webpack" );
-const ExtractTextPlugin = require( "extract-text-webpack-plugin" );
-const cssLoaders = require( "./css-loaders" );
-const common = require( "./common" );
+const webpack = require( 'webpack' );
+const ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
+const cssLoaders = require( './css-loaders' );
+const common = require( './common' );
+const HtmlWebpackInlineSourcePlugin = require( 'html-webpack-inline-source-plugin' );
 
 const { config, iP } = common;
 
 const ExtractSASSConfig = {
-  filename: "style.css",
+  filename: 'style.css',
 };
 const ExtractSASS = new ExtractTextPlugin( ExtractSASSConfig );
 
@@ -22,7 +23,7 @@ module.exports = {
       {
         test: /\.s[ca]ss$/,
         use: ExtractSASS.extract( {
-          fallback: "style-loader",
+          fallback: 'style-loader',
           use: cssLoaders( iP ),
         } ),
       },
@@ -33,5 +34,6 @@ module.exports = {
     ...config.plugins,
     new webpack.optimize.ModuleConcatenationPlugin(),
     ExtractSASS,
+    new HtmlWebpackInlineSourcePlugin(),
   ],
 };
