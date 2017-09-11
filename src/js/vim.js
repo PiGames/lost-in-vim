@@ -44,14 +44,12 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
   qs( '#m' ).appendChild( p );
 
   const msg = `# Please enter the commit message for your changes. Lines starting
-  # with '#' will be ignored, and an empty message aborts the commit.
-  # On branch master
-  #
-  # Initial commit
-  #
-  # Changes to be committed:
-  #       new file:   i.txt
-  #`;
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Changes to be committed:
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modified:   ../../index.html
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modified:   responsive.js
+#`;
 
   msg.split( '\n' ).forEach( ( line ) => {
     addNewLine( { text: line } );
@@ -70,6 +68,8 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
 };
 
 const exitVim = () => {
+  const commitMsg = qs( '#m p:first-of-type span' ).innerHTML;
+
   qs( '#m' ).parentNode.removeChild( qs( '#m' ) );
   document.body.appendChild( savedState.m );
 
@@ -80,9 +80,8 @@ const exitVim = () => {
   data.bindEvents();
   data.inputFn().focus();
 
-  const postCommit = `[master (root-commit) c063583] Commit
-  1 file changed, 1 insertion(+)
-  create mode 100644 i.txt`;
+  const postCommit = `[master (root-commit) 06b7dc0] ${ commitMsg }
+  2 files changed, 2 insertions(+), 2 deletions(-)`;
 
   data.commandHandler( `echo ${ postCommit }` );
   data.onExit();

@@ -27,6 +27,10 @@ module.exports = {
 
     rules: [
       {
+        test: /\.txt$/,
+        use: 'raw-loader',
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {

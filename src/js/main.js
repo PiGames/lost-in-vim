@@ -1,7 +1,8 @@
 import { qs } from './utils';
 import { openVim } from './vim';
-const titleText = '📁 lost-in-vim — -bash — 80×24';
-const USER_NAME = 'PearBook-Pro:~ js13k$';
+const titleText = '📁 js13kgames.com — -bash — 80×24';
+const USER_NAME = 'js13k:~ js13kgames.com';
+import asciipi from './pigame.txt';
 
 if ( window.location.hash !== '#no' ) {
   const win = window.open( './index.html#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
@@ -27,10 +28,11 @@ const GAME_STATES = {
 };
 
 let CURRENT_GAME_STATE = GAME_STATES.PRE_VIM;
+let AFTER_PUSH_COMMANDS_INDEX = 0;
 
 const PRE_VIM_COMMAND = 'git commit -a';
 const AFTER_VIM_COMMAND = 'git push';
-const AFTER_PUSH_COMMAND = 'echo "Congratulations, You won!"';
+const AFTER_PUSH_COMMANDS = [ 'echo "%0f0Congratulations, You have won!%fff"', 'credits' ];
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
@@ -78,12 +80,11 @@ const handleGit = argument => {
   case 'push': {
     CURRENT_GAME_STATE = GAME_STATES.AFTER_PUSH;
     return [
-      'Counting objects: 4, done.',
-      'Delta compression using up to 4 threads',
-      'Compressing objects: 100% (4/4), done.',
-      'Writing objects: 100% (4/4), 354 bytes | 0 bytes/s. done.',
-      'Total 4 (delta 3), reused 0 (delta 0)',
-      'remote: Resolving deltas: 100% (4/4), completed with 1 local object.',
+      'Counting objects: 5, done.',
+      'Delta compression using up to 4 threads.',
+      'Compressing objects: 100% (2/2), done.',
+      'Writing objects: 100% (5/5), 369 bytes | 0 bytes/s, done.',
+      'Total 5 (delta 0), reused 0 (delta 0)',
       'To https://github.com/js13kGames/js13kgames.com.git',
       '63ad859..06b7dc0  master -> master',
     ];
@@ -141,7 +142,12 @@ const commandHandler = fullCmd => {
   }
 
   case 'echo': {
-    resolve = args.join( ' ' ).split( '\n' );
+    resolve = args.join( ' ' ).replace( /\"/g, '' ).split( '\n' );
+    break;
+  }
+
+  case 'credits': {
+    resolve = asciipi.split( '\n' ).map( a => '%f06292' + a.replace( /\|/g, '&nbsp;' ) );
     break;
   }
 
@@ -155,10 +161,34 @@ const commandHandler = fullCmd => {
   }
   }
 
+  if ( CURRENT_GAME_STATE === GAME_STATES.AFTER_PUSH ) {
+    console.log( fullCmd.length, AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].length );
+
+    if ( fullCmd.length === AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].length ) {
+      AFTER_PUSH_COMMANDS_INDEX = Math.min( AFTER_PUSH_COMMANDS_INDEX + 1, AFTER_PUSH_COMMANDS.length - 1 );
+    }
+
+    LAST_TYPED_CHARACTER_INDEX = 0;
+  }
+
+  const colorise = ( msg ) => {
+    const colpos = msg.search( /%[a-f0-9]{3,6}/ );
+    const color = msg.match( /%([a-f0-9]{3,6})/ );
+
+    if ( colpos < 0 ) {
+      return msg;
+    } else {
+      const message = msg.substring( 0, colpos ) + `<span style="color: #${ color[ 1 ] }">` + msg.substring( colpos + color[ 0 ].length ) + '</span>';
+
+      return colorise( message );
+    }
+  };
+
   if ( resolve !== false ) {
     if ( resolve && resolve.length > 0 ) {
       resolve.forEach( ( msg ) => {
-        addNewLine( msg );
+        const message = colorise( msg );
+        addNewLine( message );
       } );
     }
 
@@ -210,7 +240,7 @@ const replaceSpan = () => {
     input().value = AFTER_VIM_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
     break;
   case GAME_STATES.AFTER_PUSH:
-    input().value = AFTER_PUSH_COMMAND.substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
+    input().value = AFTER_PUSH_COMMANDS[ AFTER_PUSH_COMMANDS_INDEX ].substr( 0, ++LAST_TYPED_CHARACTER_INDEX );
     break;
   }
   textField.innerHTML = input().value;

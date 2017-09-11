@@ -45,6 +45,7 @@
   "dependencies": {
     "archiver": "^2.0.3",
     "babel-eslint": "^7.2.3",
-    "html-webpack-inline-source-plugin": "^0.0.9"
+    "html-webpack-inline-source-plugin": "^0.0.9",
+    "raw-loader": "^0.5.1"
   }
 }
