@@ -127,10 +127,11 @@ const commandHandler = fullCmd => {
   }
 
   case 'git': {
+    if ( fullCmd !== PRE_VIM_COMMAND && fullCmd !== AFTER_VIM_COMMAND ) {
+      break;
+    }
     LAST_TYPED_CHARACTER_INDEX = 0;
-    console.log( args[ 0 ] );
     resolve = handleGit( args[ 0 ] );
-    console.log( resolve );
     break;
   }
   case 'vim': {
@@ -189,8 +190,11 @@ const getCaretPosition = ( oField ) => {
 const consoleKeydown = ( e ) => {
   if ( e.keyCode === 13 ) {
     commandHandler( input().value );
-  }
 
+    if ( CURRENT_GAME_STATE === GAME_STATES.AFTER_PUSH ) {
+      LAST_TYPED_CHARACTER_INDEX = 0;
+    }
+  }
 };
 
 const consoleKeyup = function() {

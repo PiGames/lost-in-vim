@@ -2,6 +2,32 @@ import { qs } from './utils';
 const savedState = {};
 let data = {};
 
+let isInputModeOn = false;
+let isCommandLineActive = false;
+
+const EXITING_VIM_COMBINATIONS = [
+  {
+    'Escape': false,
+    ':': false,
+    'q': false,
+    combinationString: 'wq',
+  },
+  {
+    'Escape': false,
+    ':': false,
+    'w': false,
+    'q': false,
+    combinationString: 'q',
+  },
+  {
+    'Escape': false,
+    ':': false,
+    'q': false,
+    '!': false,
+    combinationString: 'q!',
+  },
+];
+
 export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents, consoleKeydown, onExit ) => {
   const input = inputFn();
   savedState.input = input.cloneNode( true );
@@ -33,12 +59,13 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
 
   addNewLine( { dir: '~', disabled: true, className: 'vim-tilde' } );
   addNewLine( { dir: '~', disabled: true, className: 'vim-tilde' } );
-  addNewLine( { dir: '~', disabled: true, className: 'vim-tilde' } );
-  addNewLine( { dir: '~', disabled: true, className: 'vim-tilde' } );
+  const insertSign = addNewLine( { dir: '', disabled: true, className: 'insert' } );
+  const commandLine = addNewLine( { dir: '', disabled: true, className: 'vim-command-line' } );
+
 
   input.focus();
   input.removeEventListener( 'keydown', consoleKeydown );
-  data = { inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents, onExit };
+  data = { inputFn, textField, addNewLine, focusP, setTextField, commandHandler, bindEvents, onExit, commandLine, insertSign };
   input.addEventListener( 'keydown', changeCurrent );
 };
 
@@ -57,7 +84,6 @@ const exitVim = () => {
   1 file changed, 1 insertion(+)
   create mode 100644 i.txt`;
 
-  console.log( data );
   data.commandHandler( `echo ${ postCommit }` );
   data.onExit();
 };
@@ -65,6 +91,7 @@ const exitVim = () => {
 window.exitVim = exitVim;
 
 const changeCurrent = ( e ) => {
+  console.log( e );
   if ( e.keyCode === 67 && e.ctrlKey ) {
     exitVim();
   } else if ( e.keyCode === 40 || e.keyCode === 38 ) {
@@ -93,5 +120,34 @@ const changeCurrent = ( e ) => {
       data.textField = span;
       data.setTextField( span );
     }
+  }
+
+  if ( e.key === 'i' && !isCommandLineActive ) {
+    data.commandLine.innerText = '';
+    const firstSpan = document.querySelector( 'p span' );
+    data.inputFn().value = firstSpan.innerText;
+    e.preventDefault();
+    data.textField = document.querySelector( 'p span' );
+    data.setTextField( document.querySelector( 'p span' ) );
+    isInputModeOn = true;
+    isCommandLineActive = false;
+    return;
+  }
+
+  if ( e.key === 'Escape' ) {
+    isInputModeOn = false;
+    isCommandLineActive = false;
+    return;
+  }
+
+  if ( !isInputModeOn && e.key === ':' && !isCommandLineActive ) {
+    data.inputFn().value = '';
+    data.commandLine.focus();
+    document.querySelector( '.current' ).classList.remove( 'current' );
+    data.commandLine.classList.add( 'current' );
+    data.commandLine.removeAttribute( 'disabled' );
+    data.textField = data.commandLine;
+    data.setTextField( data.commandLine );
+    isCommandLineActive = true;
   }
 };

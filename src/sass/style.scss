@@ -99,3 +99,41 @@ body.debug #i {
     opacity: 0;
   }
 }
+
+.insert::before {
+  content: '-- INSERT --';
+  color:  white;
+}
+
+.vim-command-line{
+  display: flex;
+  align-items: center;
+  margin: 0;
+  flex-wrap: wrap;
+  word-break: break-all;
+  height: 1.2em;
+  
+  &.current{
+    span {
+      position: relative;
+
+      &::before {
+        position: absolute;
+        left: 0;
+        content: "a";
+        display: inline-block;
+        background: #ffffff;
+        opacity: 0;
+        height: 1.2rem;
+        transform: translateX(var(--caret-offset));
+        color: transparent;
+      }
+
+      &::after {
+        content: "a";
+        opacity: 0;
+        color: transparent;
+      }
+    }
+  }
+}
