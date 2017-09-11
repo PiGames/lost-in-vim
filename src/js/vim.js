@@ -2,7 +2,7 @@ import { qs } from './utils';
 const savedState = {};
 let data = {};
 
-let isInputModeOn = false;
+let isInputModeOn = true;
 let isCommandLineActive = false;
 let disableInput = false;
 
@@ -29,16 +29,19 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
 # with '#' will be ignored, and an empty message aborts the commit.
 # On branch master
 # Changes to be committed:
-# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modified:   ../../index.html
-# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modified:   responsive.js
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modified:   index.html
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modified:   ./sass/source/responsive.js
 #`;
 
   msg.split( '\n' ).forEach( ( line ) => {
     addNewLine( { text: line } );
   } );
 
-  addNewLine( { dir: '~', disabled: true, className: 'vim-tilde' } );
-  addNewLine( { dir: '~', disabled: true, className: 'vim-tilde' } );
+  const pWidth = qs( 'p' ).clientHeight;
+  for ( let x = 0; x < ( qs( '#m' ).clientHeight - 12 - pWidth * ( msg.split( '\n' ).length + 2 ) ) / pWidth; x++ ) {
+    addNewLine( { dir: '~', disabled: true, className: 'vim-tilde' } );
+  }
+
   const insertSign = addNewLine( { dir: '', disabled: true, className: 'insert' } );
   const commandLine = addNewLine( { dir: '', disabled: true, className: 'vim-command-line' } );
 
@@ -50,7 +53,7 @@ export const openVim = ( inputFn, textField, addNewLine, focusP, setTextField, c
   input.addEventListener( 'keydown', changeCurrent );
 };
 
-const exitVim = () => {
+const exitVim = ( status ) => {
   const commitMsg = qs( '#m p:first-of-type span' ).innerHTML;
 
   qs( '#m' ).parentNode.removeChild( qs( '#m' ) );
@@ -63,21 +66,30 @@ const exitVim = () => {
   data.bindEvents();
   data.inputFn().focus();
 
-  const postCommit = `[master (root-commit) 06b7dc0] ${ commitMsg }
-  2 files changed, 2 insertions(+), 2 deletions(-)`;
+  let postCommit;
+  if ( status ) {
+    postCommit = `[master (root-commit) 06b7dc0] ${ commitMsg }
+    2 files changed, 2 insertions(+), 2 deletions(-)`;
+  } else {
+    postCommit = 'Aborting commit due to empty commit message.';
+  }
 
   data.commandHandler( `echo ${ postCommit }` );
-  data.onExit();
+  data.onExit( status );
 };
-
-window.exitVim = exitVim;
 
 const changeCurrent = ( e ) => {
   if ( disableInput ) {
     e.preventDefault();
   }
+
   if ( e.key === 'Enter' && isCommandLineActive && EXITING_VIM_COMBINATIONS.find( _ => _ === data.commandLine.innerText ) ) {
-    exitVim();
+    const commitMsg = qs( '#m p:first-of-type span' ).innerHTML;
+    data.inputFn().value = '';
+    exitVim( data.commandLine.innerText === 'wq' && commitMsg.trim() !== '' );
+  } else if ( e.key === 'Enter' && isCommandLineActive && !EXITING_VIM_COMBINATIONS.find( _ => _ === data.commandLine.innerText ) && !data.commandLine.parentNode.classList.contains( 'error' ) ) {
+    data.commandLine.innerText = `E492: Not an editor command: ${ data.commandLine.innerText }`;
+    data.commandLine.parentNode.classList.add( 'error' );
   } else if ( e.keyCode === 40 || e.keyCode === 38 ) {
     e.preventDefault();
     const { textField } = data;
@@ -91,7 +103,7 @@ const changeCurrent = ( e ) => {
       next = p.previousSibling;
     }
 
-    if ( next.tagName === 'P' && !next.classList.contains( 'disabled' ) ) {
+    if ( next && next.tagName === 'P' && !next.classList.contains( 'disabled' ) ) {
       p.classList.remove( 'current' );
       next.classList.add( 'current' );
 
@@ -104,6 +116,12 @@ const changeCurrent = ( e ) => {
       data.textField = span;
       data.setTextField( span );
     }
+
+    data.commandLine.parentNode.classList.remove( 'error' );
+    data.commandLine.innerText = data.inputFn().value;
+  } else {
+    data.commandLine.parentNode.classList.remove( 'error' );
+    data.commandLine.innerText = data.inputFn().value;
   }
 
   if ( e.key === 'i' && !isCommandLineActive ) {
@@ -128,6 +146,11 @@ const changeCurrent = ( e ) => {
     isCommandLineActive = false;
     data.insertSign.parentNode.classList.remove( 'show' );
     data.commandLine.parentNode.classList.remove( 'show' );
+    data.commandLine.parentNode.classList.remove( 'current' );
+    if ( qs( '.current' ) ) {
+      qs( '.current' ).classList.remove( 'current' );
+    }
+    data.inputFn().value = '';
     data.commandLine.innerText = '';
     disableInput = true;
     return;
@@ -139,7 +162,9 @@ const changeCurrent = ( e ) => {
     e.preventDefault();
     data.commandLine.parentNode.classList.add( 'disabled' );
     data.commandLine.parentNode.classList.add( 'show' );
-    document.querySelector( '.current' ).classList.remove( 'current' );
+    if ( qs( '.current' ) ) {
+      qs( '.current' ).classList.remove( 'current' );
+    }
     data.commandLine.parentNode.classList.add( 'current' );
 
     data.textField = data.commandLine;

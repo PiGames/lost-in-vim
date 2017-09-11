@@ -14,9 +14,7 @@ const title = document.createElement( 'title' );
 title.innerHTML = titleText;
 document.head.appendChild( title );
 
-if ( process.env.NODE_ENV !== 'production' ) {
-  document.body.classList.add( 'debug' );
-}
+// document.body.classList.add( 'debug' );
 
 const input = () => qs( '#i' );
 
@@ -70,11 +68,19 @@ const addNewLine = ( msg ) => {
   return span;
 };
 
+const onExit = ( status ) => {
+  if ( status ) {
+    CURRENT_GAME_STATE = GAME_STATES.AFTER_VIM;
+  } else {
+    CURRENT_GAME_STATE = GAME_STATES.PRE_VIM;
+  }
+};
+
 const handleGit = argument => {
   switch ( argument ) {
   case 'commit': {
     CURRENT_GAME_STATE = GAME_STATES.VIM;
-    openVim( input, textField, addNewLine, focusP, tf => textField = tf, commandHandler, bindEvents, consoleKeydown, () => CURRENT_GAME_STATE = GAME_STATES.AFTER_VIM );
+    openVim( input, textField, addNewLine, focusP, tf => textField = tf, commandHandler, bindEvents, consoleKeydown, onExit );
     return false;
   }
   case 'push': {
@@ -227,7 +233,9 @@ const consoleKeydown = ( e ) => {
 };
 
 const consoleKeyup = function() {
-  qs( '.current' ).style.setProperty( '--caret-offset', `${ getCaretPosition( this ) * 100 }%` );
+  if ( qs( '.current' ) ) {
+    qs( '.current' ).style.setProperty( '--caret-offset', `${ getCaretPosition( this ) * 100 }%` );
+  }
 };
 
 const replaceSpan = () => {
