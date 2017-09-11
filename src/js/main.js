@@ -1,6 +1,6 @@
 import { qs } from './utils';
 import { openVim } from './vim';
-const titleText = '🏠 bartoszlegiec — -bash — 80×24';
+const titleText = '📁 lost-in-vim — -bash — 80×24';
 const USER_NAME = 'PearBook-Pro:~ js13k$';
 
 if ( window.location.hash !== '#no' ) {

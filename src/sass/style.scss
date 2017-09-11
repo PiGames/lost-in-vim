@@ -42,19 +42,13 @@ p {
         opacity: 0;
         height: 1.2rem;
         transform: translateX(var(--caret-offset));
-<<<<<<< HEAD
-=======
         color: transparent;
->>>>>>> 5309199dbd7356bff584d76e658430fdcc7d41f7
       }
 
       &::after {
         content: "a";
         opacity: 0;
-<<<<<<< HEAD
-=======
         color: transparent;
->>>>>>> 5309199dbd7356bff584d76e658430fdcc7d41f7
       }
     }
   }
