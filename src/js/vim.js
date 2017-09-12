@@ -141,7 +141,7 @@ const changeCurrent = ( e ) => {
     return;
   }
 
-  if ( e.key === 'Escape' ) {
+  if ( e.key === 'Escape' || ( e.key === 'c' && e.ctrlKey ) ) {
     isInputModeOn = false;
     isCommandLineActive = false;
     data.insertSign.parentNode.classList.remove( 'show' );

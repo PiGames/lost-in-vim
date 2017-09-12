@@ -30,7 +30,7 @@ let AFTER_PUSH_COMMANDS_INDEX = 0;
 
 const PRE_VIM_COMMAND = 'git commit -a';
 const AFTER_VIM_COMMAND = 'git push';
-const AFTER_PUSH_COMMANDS = [ 'echo "%0f0Congratulations, You have won!%fff"', 'credits', 'exit' ];
+const AFTER_PUSH_COMMANDS = [ 'echo "%0f0Congratulations, You have won!"', 'credits', 'exit' ];
 
 let LAST_TYPED_CHARACTER_INDEX = 0;
 
