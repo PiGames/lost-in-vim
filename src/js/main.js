@@ -4,8 +4,8 @@ const titleText = '📁 js13kgames.com — -bash — 80×24';
 const USER_NAME = 'js13k:~ js13kgames.com';
 import asciipi from './pigame.txt';
 
-if ( window.location.hash !== '#no' ) {
-  const win = window.open( './index.html#no', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
+if ( window.location.hash === '#yes' ) {
+  const win = window.open( './index.html', titleText, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, height=450, width=650, centerscreen=yes' );
 
   win.focus();
 }
